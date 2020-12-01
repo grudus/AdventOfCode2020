@@ -6,33 +6,30 @@ import io.vavr.Tuple3;
 
 import java.util.List;
 
-import static io.vavr.collection.List.ofAll;
+import static io.vavr.collection.List.*;
 
 //--- Day 1: Report Repair ---
 public class Day01 {
 
     public static long firstStar(List<String> input) {
-        var list = ofAll(input).map(Long::valueOf);
-
-        return list
-                .flatMap(first -> list.map(elem -> new Tuple2<>(first, elem)))
-                .toStream()
-                .find(pair -> pair._1 + pair._2 == 2020)
-                .map(pair -> pair._1 * pair._2)
-                .getOrNull();
-
+        return findProductOfSum(input, 2);
     }
 
     public static long secondStar(List<String> input) {
-        var list = ofAll(input).map(Long::valueOf);
+        return findProductOfSum(input, 3);
+    }
 
-        return list
-                .flatMap(first -> list.flatMap(second -> list.map(third -> new Tuple3<>(first, second, third))))
+
+    public static long findProductOfSum(List<String> expenseReport, int numberOfEntriesToSum) {
+        var list = ofAll(expenseReport).map(Long::valueOf);
+
+        return range(0, numberOfEntriesToSum - 1)
+                .map(i -> list)
+                .foldLeft(list.map(x -> ofAll(x)), (acc, singleList) -> acc.flatMap(xs -> singleList.map(xs::append)))
                 .toStream()
-                .find(pair -> pair._1 + pair._2 + pair._3 == 2020)
-                .map(pair -> pair._1 * pair._2 * pair._3)
+                .find(itemList -> itemList.sum().longValue() == 2020L)
+                .map(itemList -> itemList.product().longValue())
                 .getOrNull();
-
     }
 
     public static void main(String[] args) {
