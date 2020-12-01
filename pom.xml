@@ -10,6 +10,7 @@
         <lombok.version>1.18.16</lombok.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <vavr.version>1.0.0-alpha-3</vavr.version>
     </properties>
 
 
@@ -24,6 +25,12 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>${vavr.version}</version>
         </dependency>
     </dependencies>
 
