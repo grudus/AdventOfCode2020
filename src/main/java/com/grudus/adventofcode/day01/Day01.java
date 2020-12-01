@@ -1,42 +1,42 @@
 package com.grudus.adventofcode.day01;
 
+import com.google.common.collect.Lists;
 import com.grudus.adventofcode.Utils;
-import io.vavr.Tuple2;
-import io.vavr.Tuple3;
+import io.vavr.collection.List;
 
-import java.util.List;
-
-import static io.vavr.collection.List.*;
+import static io.vavr.collection.List.ofAll;
+import static io.vavr.collection.List.range;
 
 //--- Day 1: Report Repair ---
 public class Day01 {
 
-    public static long firstStar(List<String> input) {
-        return findProductOfSum(input, 2);
+    public static long firstStar(List<Long> expenseReport) {
+        return findProductOfSum(expenseReport, 2);
     }
 
-    public static long secondStar(List<String> input) {
-        return findProductOfSum(input, 3);
+    public static long secondStar(List<Long> expenseReport) {
+        return findProductOfSum(expenseReport, 3);
     }
 
 
-    public static long findProductOfSum(List<String> expenseReport, int numberOfEntriesToSum) {
-        var list = ofAll(expenseReport).map(Long::valueOf);
+    public static long findProductOfSum(List<Long> expenseReport, int numberOfEntriesToSum) {
+        var lists = range(0, numberOfEntriesToSum).map(i -> expenseReport.toJavaList()).toJavaList();
+        var combinations = Lists.cartesianProduct(lists);
 
-        return range(0, numberOfEntriesToSum - 1)
-                .map(i -> list)
-                .foldLeft(list.map(x -> ofAll(x)), (acc, singleList) -> acc.flatMap(xs -> singleList.map(xs::append)))
+        return ofAll(combinations)
                 .toStream()
-                .find(itemList -> itemList.sum().longValue() == 2020L)
+                .map(List::ofAll)
+                .find(itemList -> itemList.sum().longValue() == 2020)
                 .map(itemList -> itemList.product().longValue())
-                .getOrNull();
+                .getOrElse(0L);
     }
 
     public static void main(String[] args) {
         var input = Utils.readFileInput(Day01.class);
+        var expenseReport = ofAll(input).map(Long::valueOf);
 
-        System.out.println(firstStar(input));
-        System.out.println(secondStar(input));
+        System.out.println(firstStar(expenseReport));
+        System.out.println(secondStar(expenseReport));
     }
 }
 
