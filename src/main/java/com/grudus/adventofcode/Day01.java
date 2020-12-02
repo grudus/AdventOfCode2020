@@ -1,7 +1,6 @@
-package com.grudus.adventofcode.day01;
+package com.grudus.adventofcode;
 
 import com.google.common.collect.Lists;
-import com.grudus.adventofcode.Utils;
 import io.vavr.collection.List;
 
 import static io.vavr.collection.List.ofAll;

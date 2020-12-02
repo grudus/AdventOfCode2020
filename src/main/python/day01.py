@@ -18,7 +18,7 @@ def second_star(expense_report):
 
 
 
-report = open('input.txt', 'r').read()
+report = open('src/main/resources/day01/input.txt', 'r').read()
 numbers = list(map(int, report.split("\n")))
 
 print(first_star(numbers))

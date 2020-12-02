@@ -1,6 +1,5 @@
-package com.grudus.adventofcode.day02;
+package com.grudus.adventofcode;
 
-import com.grudus.adventofcode.Utils;
 import io.vavr.collection.List;
 
 import java.util.regex.Pattern;
