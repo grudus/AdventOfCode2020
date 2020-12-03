@@ -4,12 +4,28 @@ import io.vavr.collection.List;
 
 import java.util.regex.Pattern;
 
-import static io.vavr.collection.List.ofAll;
 import static java.lang.Integer.parseInt;
 
 // --- Day 2: Password Philosophy ---
-public class Day02 {
+public class Day02 extends Day<Integer> {
     private final static Pattern PASSWORD_POLICY_PATTERN = Pattern.compile("(\\d+)-(\\d+) (\\w): (\\w+)");
+
+    @Override
+    public Integer firstStar(List<String> input) {
+        return input
+                .map(line -> Utils.findRegexGroups(PASSWORD_POLICY_PATTERN, line))
+                .map(groups -> PolicyAndPassword.fromGroups(groups.toArray(String[]::new)))
+                .count(PolicyAndPassword::isFirstJobValid);
+    }
+
+    @Override
+    public Integer secondStar(List<String> input) {
+        return input
+                .map(line -> Utils.findRegexGroups(PASSWORD_POLICY_PATTERN, line))
+                .map(groups -> PolicyAndPassword.fromGroups(groups.toArray(String[]::new)))
+                .count(PolicyAndPassword::isOfficialTobogganCorporateAuthenticationSystemValid);
+    }
+
 
     record PolicyAndPassword(int rangeStart, int rangeEnd, char letter, String password) {
         static PolicyAndPassword fromGroups(String[] groups) {
@@ -27,28 +43,5 @@ public class Day02 {
             return ((password.charAt(rangeStart - 1) == letter ? 1 : 0)
                     + (password.charAt(rangeEnd - 1) == letter ? 1 : 0)) == 1;
         }
-    }
-
-
-    public static int firstStar(List<String> input) {
-        return input
-                .map(line -> Utils.findRegexGroups(PASSWORD_POLICY_PATTERN, line))
-                .map(groups -> PolicyAndPassword.fromGroups(groups.toArray(String[]::new)))
-                .count(PolicyAndPassword::isFirstJobValid);
-    }
-
-    public static int secondStar(List<String> input) {
-        return input
-                .map(line -> Utils.findRegexGroups(PASSWORD_POLICY_PATTERN, line))
-                .map(groups -> PolicyAndPassword.fromGroups(groups.toArray(String[]::new)))
-                .count(PolicyAndPassword::isOfficialTobogganCorporateAuthenticationSystemValid);
-    }
-
-
-    public static void main(String[] args) {
-        var input = Utils.readFileInput(Day02.class);
-
-        System.out.println(firstStar(ofAll(input)));
-        System.out.println(secondStar(ofAll(input)));
     }
 }

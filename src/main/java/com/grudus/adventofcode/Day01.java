@@ -7,14 +7,14 @@ import static io.vavr.collection.List.ofAll;
 import static io.vavr.collection.List.range;
 
 //--- Day 1: Report Repair ---
-public class Day01 {
+public class Day01 extends Day<Long> {
 
-    public static long firstStar(List<Long> expenseReport) {
-        return findProductOfSum(expenseReport, 2);
+    public Long firstStar(List<String> expenseReport) {
+        return findProductOfSum(expenseReport.map(Long::parseLong), 2);
     }
 
-    public static long secondStar(List<Long> expenseReport) {
-        return findProductOfSum(expenseReport, 3);
+    public Long secondStar(List<String> expenseReport) {
+        return findProductOfSum(expenseReport.map(Long::parseLong), 3);
     }
 
 
@@ -28,14 +28,6 @@ public class Day01 {
                 .find(itemList -> itemList.sum().longValue() == 2020)
                 .map(itemList -> itemList.product().longValue())
                 .getOrElse(0L);
-    }
-
-    public static void main(String[] args) {
-        var input = Utils.readFileInput(Day01.class);
-        var expenseReport = ofAll(input).map(Long::valueOf);
-
-        System.out.println(firstStar(expenseReport));
-        System.out.println(secondStar(expenseReport));
     }
 }
 
