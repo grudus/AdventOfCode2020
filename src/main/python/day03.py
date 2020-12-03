@@ -3,16 +3,17 @@ from operator import mul
 from functools import reduce
 
 def first_star(forest):
-    return traverse_tree(forest, 3, 1)
+    return traverse_forest(forest, (3, 1))
 
 
 def second_star(forest):
-    velocities = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
-    trees = [traverse_tree(forest, dx, dy) for (dx, dy) in velocities]
+    slopes = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
+    trees = [traverse_forest(forest, slope) for slope in slopes]
     return reduce(mul, trees)
 
 
-def traverse_tree(forest, dx, dy):
+def traverse_forest(forest, slope):
+    (dx, dy) = slope
     current_coord = (0, 0)
     forest_size_y = len(forest)
     forest_size_x = len(forest[0])
