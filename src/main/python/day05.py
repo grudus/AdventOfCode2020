@@ -1,20 +1,14 @@
 
 def first_star(boarding_passes):
-    positions = [calculate_position(boarding_pass) for boarding_pass in boarding_passes]
-    return max([calculate_id(position) for position in positions])
+    positions = map(calculate_position, boarding_passes)
+    return max(map(calculate_id, positions))
 
 
 def second_star(boarding_passes):
-    positions = [calculate_position(boarding_pass) for boarding_pass in boarding_passes]
+    positions = map(calculate_position, boarding_passes)
     position_ids = sorted(map(calculate_id, positions))
 
-    previous_id = position_ids[0]
-    for position_id in position_ids[1:]:
-
-        if position_id != (previous_id + 1):
-            return position_id - 1
-        
-        previous_id = position_id
+    return next(filter(lambda id: id - 1 not in position_ids, position_ids[1:])) - 1
 
 
 def calculate_id(tuple):
@@ -26,7 +20,6 @@ def calculate_position(boarding_pass):
 def convert_to_binary(position_stirng):
     binary_list = ["1" if position in ['B', 'R'] else "0" for position in position_stirng]
     return int("".join(binary_list) ,2)
-
 
 
 if __name__ == "__main__":
