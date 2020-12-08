@@ -7,7 +7,7 @@ import static io.vavr.collection.List.ofAll;
 
 public class Launcher {
     public static void main(String[] args) {
-        Day day = new Day07();
+        Day day = new Day08();
         List<String> input = ofAll(Utils.readFileInput(day.getClass()));
 
         System.out.println(day.firstStar(input));
