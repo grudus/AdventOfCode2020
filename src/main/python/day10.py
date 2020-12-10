@@ -1,15 +1,13 @@
-def first_star(adapters):
-    built_in_adapter = max(adapters) + 3
-    adapters = sorted(adapters) + [built_in_adapter]
-    used_offsets = {1: 0, 2: 0, 3: 0}
-    curr_voltage = 0
+from collections import defaultdict
 
-    for adapter in adapters:
-        diff = adapter - curr_voltage
-        used_offsets[diff] += 1
-        curr_voltage += diff
+def first_star(adapters):
+    adapters = [0] + sorted(adapters) + [max(adapters) + 3]
+    joltage_differences = defaultdict(int)
+
+    for i in range(len(adapters) - 1):
+        joltage_differences[adapters[i+1] - adapters[i]] += 1
     
-    return used_offsets[1] * used_offsets[3]
+    return joltage_differences[1] * joltage_differences[3]
 
 
 def second_star(adapters):
