@@ -1,12 +1,7 @@
 from copy import deepcopy
 
-def first_star(seat_layout): 
-    return change_seats_and_stabilize_chaos(seat_layout, count_neighbours, 4)
-
-
-def second_star(seat_layout):
-    return change_seats_and_stabilize_chaos(seat_layout, count_seen_occupied_seats, 5)
-
+def first_star(seat_layout): return change_seats_and_stabilize_chaos(seat_layout, count_neighbours, 4)
+def second_star(seat_layout): return change_seats_and_stabilize_chaos(seat_layout, count_seen_occupied_seats, 5)
 
 def change_seats_and_stabilize_chaos(initial_layout, count_occupied_seats_func, max_occupied_seats):
     curr_layout = deepcopy(initial_layout)
@@ -17,23 +12,20 @@ def change_seats_and_stabilize_chaos(initial_layout, count_occupied_seats_func, 
         curr_layout = new_layout
 
 
-def change_seats(seat_layout, count_occupied_seats_func, max_occupied_seats):
-    layout_after_changes = deepcopy(seat_layout)
+def change_seats(layout, count_occupied_seats_func, max_occupied_seats):
+    layout_after_changes = deepcopy(layout)
     changed = False
+    positions = [(row, col) for row in range(len(layout)) for col in (range(len(layout[0]))) if layout[row][col] != '.']
 
-    for row in range(len(seat_layout)):
-        for col in range(len(seat_layout[0])):
-            if seat_layout[row][col] == '.':
-                continue
-
-            occupied_seats = count_occupied_seats_func(seat_layout, row, col)
-            
-            if occupied_seats == 0:
-                changed = changed or seat_layout[row][col] != '#'
-                layout_after_changes[row][col] = '#'
-            elif occupied_seats >= max_occupied_seats:
-                changed = changed or seat_layout[row][col] != 'L'
-                layout_after_changes[row][col] = 'L'
+    for row, col in positions:
+        occupied_seats = count_occupied_seats_func(layout, row, col)
+        
+        if occupied_seats == 0:
+            changed = changed or layout[row][col] != '#'
+            layout_after_changes[row][col] = '#'
+        elif occupied_seats >= max_occupied_seats:
+            changed = changed or layout[row][col] != 'L'
+            layout_after_changes[row][col] = 'L'
     
     return (layout_after_changes, changed)
 
