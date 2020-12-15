@@ -10,10 +10,7 @@ def find_nth_spoken_number(starting_numbers, n):
 
     for turn in range(len(starting_numbers) + 1, n + 1):
         prev_occurences = occurences[prev_number]
-        
-        if len(prev_occurences) < 2: prev_number = 0
-        else: prev_number = prev_occurences[-1] - prev_occurences[-2]
-        
+        prev_number = 0 if len(prev_occurences) < 2 else prev_occurences[-1] - prev_occurences[-2]
         occurences[prev_number] += [turn]
     
     return prev_number
