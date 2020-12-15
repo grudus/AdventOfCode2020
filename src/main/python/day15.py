@@ -6,21 +6,15 @@ def second_star(starting_numbers): return find_nth_spoken_number(starting_number
 def find_nth_spoken_number(starting_numbers, n):
     occurences = defaultdict(list)
     for i, number in enumerate(starting_numbers): occurences[number] = [i + 1]
-    
-    turn = len(starting_numbers) + 1
     prev_number = starting_numbers[-1]
 
-    while turn <= n:
+    for turn in range(len(starting_numbers) + 1, n + 1):
         prev_occurences = occurences[prev_number]
         
-        if len(prev_occurences) < 2:
-            prev_number = 0
-            occurences[prev_number] += [turn]
-        else:
-            diff = prev_occurences[-1] - prev_occurences[-2]
-            prev_number = diff
-            occurences[diff] += [turn]
-        turn += 1
+        if len(prev_occurences) < 2: prev_number = 0
+        else: prev_number = prev_occurences[-1] - prev_occurences[-2]
+        
+        occurences[prev_number] += [turn]
     
     return prev_number
 
