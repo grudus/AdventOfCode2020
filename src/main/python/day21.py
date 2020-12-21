@@ -13,8 +13,8 @@ def second_star(foods):
 def find_menu(foods):
     food_pattern = re.compile(r"(.*) \(contains (.*)\)")
     foods = [(ingredients.split(), allergens.replace(",", "").split()) 
-    for food in foods 
-    for ingredients, allergens in food_pattern.findall(food)]
+        for food in foods 
+        for ingredients, allergens in food_pattern.findall(food)]
     
     allergens_to_possible_ingredients = defaultdict(lambda: defaultdict(int))
     ingredients_occurences = defaultdict(int)
@@ -27,13 +27,12 @@ def find_menu(foods):
 
     
     known_ingredients = {}
-    is_known_ingredient = lambda ingr: ingr in known_ingredients.keys()
     num_of_allergens = len(allergens_to_possible_ingredients.keys())
 
     while len(known_ingredients) != num_of_allergens:
 
         for allergen, ingredients_count in list(allergens_to_possible_ingredients.items()):
-            ingredients_count = [entry for entry in ingredients_count.items() if not is_known_ingredient(entry[0])]
+            ingredients_count = [entry for entry in ingredients_count.items() if entry[0] not in known_ingredients]
             max_count = max([count for ingredient, count in ingredients_count])
             best_ingredients_for_allergen = [ingredient for ingredient, count in ingredients_count if count == max_count]
             
