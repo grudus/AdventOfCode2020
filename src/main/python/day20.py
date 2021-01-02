@@ -18,7 +18,6 @@ class Borders:
     left: typing.Tuple[int, int]
 
     def to_set(self): return set(self.to_list())
-
     def to_list(self): return list(self.top) + list(self.right) + list(self.bottom) + list(self.left)
 
 
@@ -56,30 +55,25 @@ def second_star(tiles_input):
                 if neighbour in tiles_in_world_map:
                     continue
 
-                print("===== START =======")
-
                 n_area, n_borders = tiles[neighbour]
-                draw_world({(0, 0): n_area})
                 direction, rotate_angle, flip_axis = find_required_action(parent_borders, n_borders)
 
                 new_area = perform_area_actions(n_area, rotate_angle, flip_axis)
                 tiles[neighbour] = (new_area, find_borders(new_area))
 
-                new_coord = tuple([sum(coords) for coords in zip(direction, tiles_in_world_map[tile_id])])
-
-                if new_coord in world_map:
-                    print("!!!!! ", new_coord, direction, rotate_angle, flip_axis)
-                    exit(-1)
+                new_coord = sum_tuples(direction, tiles_in_world_map[tile_id])
 
                 tiles_in_world_map[neighbour] = new_coord
 
                 world_map[new_coord] = new_area
 
-                draw_world(world_map)
-                # print(f"{tile_id}:{coord} - {neighbour}:{new_coord}", rotate_angle, flip_axis)
-                print("===== END ====== \n\n\n")
+    for coord, area in list(world_map.items()):
+        world_map[coord] = remove_borders(area)
 
-    draw_world(world_map)
+    return search_monsters(world_map)
+
+
+def sum_tuples(t1: typing.Tuple, t2: typing.Tuple) -> typing.Tuple: return tuple([sum(aa) for aa in zip(t1, t2)])
 
 
 def find_common_borders(borders1: Borders, borders2: Borders): return tuple(
@@ -104,7 +98,6 @@ def find_required_action(borders1: Borders, borders2: Borders):
             direction2 = direction
             flip_axis = 1 if direction2 in ["top", "bottom"] else 0
 
-    print("BEFORE MAGIC", direction1, direction2, common_borders, flip_axis, borders1, borders2)
     if direction1 == direction2:
         angle_to_rotate = 180
         if flip_axis is None:
@@ -128,7 +121,6 @@ def find_required_action(borders1: Borders, borders2: Borders):
             else:
                 flip_axis = None
 
-    print("AFTER MAGIC", direction1, direction2, angle_to_rotate, flip_axis)
     return directions[direction1], angle_to_rotate, flip_axis
 
 
@@ -178,25 +170,91 @@ def find_borders(tile_lines: Area) -> Borders:
     )
 
 
-def draw_world(world_map: typing.Dict[Coord, Area]):
-    coords = list(sorted(world_map.keys(), key=lambda element: (-element[1], element[0])))
+def remove_borders(area: Area) -> Area:
+    max_y, max_x = len(area) - 1, len(area[0]) - 1
+    array = np.delete(area, max_y, 0)
+    array = np.delete(array, 0, 0)
+    array = np.delete(array, max_x, 1)
+    array = np.delete(array, 0, 1)
+    return array.tolist()
+
+
+def search_monsters(world_map: typing.Dict[Coord, Area]) -> int:
+    pixel_map = {}
+    tile_len = len(list(world_map.values())[0])
+
+    for coord, area in world_map.items():
+        for row_i, row in enumerate(area):
+            for col_i, col in enumerate(row):
+                large_x, large_y = coord
+                pixel_coord = (tile_len * large_x + col_i, tile_len * large_y - row_i)
+                pixel_map[pixel_coord] = col
+
+    pixel_array = dict_to_list(pixel_map)
+    count = do_count_monsters(pixel_map)
+
+    num_of_hash = sum([1 for v in pixel_map.values() if v == '#'])
+
+    for _ in range(4):
+        if count > 0: break
+
+        pixel_array = np.rot90(pixel_array)
+        pixel_map = array_to_dict(pixel_array)
+        count = do_count_monsters(pixel_map)
+        if count > 0: break
+
+        pixel_array = np.flip(pixel_array, 1)
+        pixel_map = array_to_dict(pixel_array)
+        count = do_count_monsters(pixel_map)
+        if count > 0: break
+
+        pixel_array = np.flip(pixel_array, 0)
+        pixel_map = array_to_dict(pixel_array)
+        count = do_count_monsters(pixel_map)
+        if count > 0: break
+
+        pixel_array = np.flip(pixel_array)
+        pixel_map = array_to_dict(pixel_array)
+        count = do_count_monsters(pixel_map)
+        if count > 0: break
+
+    return num_of_hash - 15 * count
+
+
+def do_count_monsters(pixel_map: typing.Dict[Coord, chr]):
+    monster_pattern = [(0, 0), (1, -1), (4, -1), (5, 0), (6, 0), (7, -1), (10, -1), (11, 0), (12, 0), (13, -1),
+                       (16, -1), (17, 0), (18, 0), (18, 1), (19, 0)]
+
+    count = 0
+    for coord in pixel_map.keys():
+        monster_parts = sum(
+            [1 for direction in monster_pattern if pixel_map.get(sum_tuples(coord, direction), '.') == '#'])
+
+        count += 1 if monster_parts == len(monster_pattern) else 0
+
+    return count
+
+
+def dict_to_list(pixel_map: typing.Dict[Coord, chr]) -> typing.List[typing.List[chr]]:
+    coords = list(sorted(pixel_map.keys(), key=lambda element: (-element[1], element[0])))
     columns = {coord[1]: None for coord in coords}.keys()
     rows = {coord[0]: None for coord in coords}.keys()
 
-    print(coords)
+    result = ""
     for col in columns:
-        single_row_areas = [world_map.get((row, col), [" "] * 11) for row in rows]
+        single_row_areas = [pixel_map.get((row, col)) for row in rows]
         area_rows = list(zip(*single_row_areas))
         for row in area_rows:
-            print(" ".join(["".join(a) for a in row]))
+            result += "".join([a for a in row])
+            result += "\n"
 
-        print("")
+    result = result[:-1]
 
-    # for col in columns:
-    #     print(col)
-    #     print(" ".join([str(row) for row in rows]))
-    #     print(" ".join([str(row) for row in rows if (row, col) in coords ]))
-    #     print()
+    return [list(rr) for rr in result.split("\n")]
+
+
+def array_to_dict(arr: typing.List[typing.List]) -> typing.Dict[typing.Tuple, typing.Any]:
+    return dict(((j, i), arr[i][j]) for i in range(len(arr)) for j in range(len(arr[0])))
 
 
 if __name__ == "__main__":
